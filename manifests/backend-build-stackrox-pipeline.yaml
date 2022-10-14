@@ -14,8 +14,8 @@ spec:
   source:
     contextDir: Jenkinsfile/build-stackrox
     git:
-      ref: cve
-      uri: https://gitlab.com/ocp-demo/backend_quarkus.git
+      ref: master
+      uri: https://github.com/liuxiaoyu-git/backend_quarkus.git
     # sourceSecret:
     #   name: gogs-secret
     type: Git
