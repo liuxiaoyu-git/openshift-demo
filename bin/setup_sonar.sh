@@ -9,16 +9,17 @@ UAT_PROJECT=uat
 SONAR_PVC_SIZE="10Gi"
 oc project $CICD_PROJECT
 echo "Setup PostgreSQL for SonarQube..."
-oc new-app  --template=postgresql-persistent \
---param POSTGRESQL_USER=sonar \
---param POSTGRESQL_PASSWORD=sonar \
---param POSTGRESQL_DATABASE=sonar \
---param VOLUME_CAPACITY=${SONAR_PVC_SIZE} \
---labels=app=sonarqube_db,app.openshift.io/runtime=postgresql
+oc process postgresql-persistent -n openshift --param POSTGRESQL_USER=sonar --param POSTGRESQL_PASSWORD=sonar --param POSTGRESQL_DATABASE=sonar --param VOLUME_CAPACITY=${SONAR_PVC_SIZE} --labels=app=sonarqube_db,app.openshift.io/runtime=postgresql | oc create -f -
+# oc new-app  --template=postgresql-persistent \
+# --param POSTGRESQL_USER=sonar \
+# --param POSTGRESQL_PASSWORD=sonar \
+# --param POSTGRESQL_DATABASE=sonar \
+# --param VOLUME_CAPACITY=${SONAR_PVC_SIZE} \
+# --labels=app=sonarqube_db,app.openshift.io/runtime=postgresql
 sleep 15
 oc wait --for=condition=Ready --timeout=300s pods -l name=postgresql -n $CICD_PROJECT
 # check_pod "postgresql"
-clear;echo "Setup SonarQube..."
+echo "Setup SonarQube..."
 oc new-app  --docker-image=quay.io/gpte-devops-automation/sonarqube:$SONARQUBE_VERSION --env=SONARQUBE_JDBC_USERNAME=sonar --env=SONARQUBE_JDBC_PASSWORD=sonar --env=SONARQUBE_JDBC_URL=jdbc:postgresql://postgresql/sonar --labels=app=sonarqube
 oc rollout pause deployment sonarqube
 oc annotate deployment sonarqube 'app.openshift.io/connects-to=[{"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","name":"postgresql"}]'
