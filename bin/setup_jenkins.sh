@@ -56,7 +56,7 @@ done
 echo "Link Nexus' secret to builder"
 oc secrets link builder nexus-registry -n $CICD_PROJECT
 oc secrets link builder nexus-svc-registry -n $CICD_PROJECT
-oc import-image maven36-with-tools --from=quay.io/voravitl/maven36-with-tools --all --confirm -n $CICD_PROJECT
+oc import-image maven36-with-tools --from=quay.io/xiaoyu/maven36-with-tools --all --confirm -n $CICD_PROJECT
 END_BUILD=$(date +%s)
 BUILD_TIME=$(expr ${END_BUILD} - ${START_BUILD})
 
